@@ -1,16 +1,40 @@
-export const fetchCollection = () => {
-  /**
-   * Step 2: Instead of directly returning the collection, fetch it from http://localhost:8001/cards
-   */
-  return [
-    {
-      id: 26166,
-      player: {
-        firstname: 'Karim',
-        lastname: 'Benzema',
-        birthday: '1987-12-19T08:38:50.090Z',
-        image: 'https://images.fotmob.com/image_resources/playerimages/26166.png'
-      }
+import { Player } from '../types';
+
+export const fetchCollection = async (id?: number) => {
+  const response = await fetch(`http://localhost:8001/cards/${id}`);
+  const data = await response.json();
+  return data;
+};
+
+export const fetchAllCards = async () => {
+  const response = await fetch('http://localhost:8001/cards');
+  const data = await response.json();
+  return data;
+};
+
+export const addPlayer = async (playerData: Player) => {
+  try {
+    const id = Math.floor(Math.random() * 1000000);
+    const playerWithId = {
+      id,
+      player: playerData,
+    };
+    const response = await fetch(`http://localhost:8001/cards`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(playerWithId),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to add player');
     }
-  ];
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error adding player:', error);
+    throw error;
+  }
 };
